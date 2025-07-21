@@ -4,7 +4,7 @@ using SynelTask.Web.Database;
 
 namespace SynelTask.Web.Features.GetEmployees;
 
-internal sealed class GetEmployeesHandler(
+public sealed class GetEmployeesHandler(
     IApplicationDbContext context) : IGetEmployeesHandler
 {
     public async Task<Result<List<EmployeesResponse>>> HandleAsync(CancellationToken cancellationToken = default)

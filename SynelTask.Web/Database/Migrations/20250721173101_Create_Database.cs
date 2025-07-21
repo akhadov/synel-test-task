@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -19,6 +20,8 @@ namespace SynelTask.Web.Database.Migrations
                 schema: "Personnel_Records",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     PayrollNumber = table.Column<string>(type: "text", nullable: false),
                     Forenames = table.Column<string>(type: "text", nullable: false),
                     Surname = table.Column<string>(type: "text", nullable: false),
@@ -33,6 +36,7 @@ namespace SynelTask.Web.Database.Migrations
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
         }
 

@@ -5,7 +5,7 @@ using SynelTask.Web.Helpers;
 
 namespace SynelTask.Web.Features.ImportCsv;
 
-internal sealed class ImportCsvHandler(
+public sealed class ImportCsvHandler(
     IApplicationDbContext context) : IImportCsvHandler
 {
     public async Task<Result<ImportCsvResult>> HandleAsync(ImportCsvRequest request, CancellationToken cancellationToken = default)

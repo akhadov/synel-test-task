@@ -12,7 +12,7 @@ using SynelTask.Web.Database;
 namespace SynelTask.Web.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250720132101_Create_Database")]
+    [Migration("20250721173101_Create_Database")]
     partial class Create_Database
     {
         /// <inheritdoc />
@@ -28,6 +28,12 @@ namespace SynelTask.Web.Database.Migrations
 
             modelBuilder.Entity("SynelTask.Web.Entities.Employee", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("text");
@@ -69,6 +75,8 @@ namespace SynelTask.Web.Database.Migrations
                     b.Property<string>("Telephone")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Employees", "Personnel_Records");
                 });
