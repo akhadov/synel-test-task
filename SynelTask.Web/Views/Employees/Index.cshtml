@@ -1,0 +1,632 @@
+﻿@{
+    ViewData["Title"] = "Employee Management";
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 20px auto;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        50% {
+            transform: translate(-20px, -20px) rotate(180deg);
+        }
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+
+    .upload-section {
+        padding: 30px;
+        border-bottom: 1px solid #e0e0e0;
+        background: #f8f9ff;
+    }
+
+    .upload-form {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 12px;
+        padding: 2px;
+        transition: transform 0.3s ease;
+    }
+
+        .file-input-wrapper:hover {
+            transform: translateY(-2px);
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+    .file-input-label {
+        display: block;
+        background: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .file-input-wrapper:hover .file-input-label {
+        background: #f0f0f0;
+    }
+
+    .upload-btn {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+    .message {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
+    }
+
+        .message.success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .employees-section {
+        padding: 30px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .employee-count {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .search-container {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 15px 50px 15px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+    .search-icon {
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-size: 18px;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+        font-size: 18px;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e0e0e0;
+        border-radius: 50%;
+        border-top-color: #667eea;
+        animation: spin 1s ease-in-out infinite;
+        margin-bottom: 20px;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .employee-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 20px;
+    }
+
+    .employee-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .employee-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .employee-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+    .employee-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .employee-payroll {
+        color: #667eea;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .employee-details {
+        display: grid;
+        gap: 8px;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #666;
+        min-width: 100px;
+        margin-right: 10px;
+    }
+
+    .detail-value {
+        color: #333;
+        flex: 1;
+    }
+
+    .no-employees {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+        font-size: 18px;
+    }
+
+    .no-employees-icon {
+        font-size: 64px;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    @@media (max-width: 768px) {
+        .container {
+            margin: 10px;
+            border-radius: 15px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+        }
+
+        .upload-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .employee-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <h1>Employee Management</h1>
+        <p>Import and manage employee data with ease</p>
+    </div>
+
+    <div class="upload-section">
+        <form asp-controller="Employees" asp-action="ImportCsv" enctype="multipart/form-data" method="post" class="upload-form" id="uploadForm">
+            <div class="file-input-wrapper">
+                <input type="file" id="csvFile" name="file" accept=".csv" />
+                <label for="csvFile" class="file-input-label">📁 Choose CSV File</label>
+            </div>
+            <button type="submit" class="upload-btn" id="uploadBtn">
+                📤 Import Employees
+            </button>
+        </form>
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="message success">
+                @TempData["Message"]
+            </div>
+        }
+
+        <div id="clientMessage" style="display: none;"></div>
+    </div>
+
+    <div class="employees-section">
+        <div class="section-header">
+            <h2 class="section-title">Employee Directory</h2>
+            <div class="employee-count" id="employeeCount">0 employees</div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search employees by name, email, or payroll number...">
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <div id="employeeContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <div>Loading employees...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    class EmployeeManager {
+        constructor() {
+            this.employees = [];
+            this.filteredEmployees = [];
+            this.init();
+        }
+
+        init() {
+            this.setupEventListeners();
+            this.loadEmployees();
+        }
+
+        setupEventListeners() {
+            const uploadForm = document.getElementById('uploadForm');
+            const searchInput = document.getElementById('searchInput');
+            const fileInput = document.getElementById('csvFile');
+
+            uploadForm.addEventListener('submit', (e) => this.handleFileUpload(e));
+            searchInput.addEventListener('input', (e) => this.handleSearch(e));
+            fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+        }
+
+        handleFileSelect(e) {
+            const file = e.target.files[0];
+            const label = document.querySelector('.file-input-label');
+            if (file) {
+                label.textContent = `📁 ${file.name}`;
+            } else {
+                label.textContent = '📁 Choose CSV File';
+            }
+        }
+
+            async handleFileUpload(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        if (!formData.get('file') || formData.get('file').size === 0) {
+            this.showClientMessage('Please select a valid CSV file.', 'error');
+            return;
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = '⏳ Importing...';
+
+        try {
+            const response = await fetch('@Url.Action("ImportCsv", "Employees")', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Important for server to return JSON
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                this.showClientMessage(`Successfully imported ${result.count} employees!`, 'success');
+                this.loadEmployees(); // Refresh the employee list
+                document.getElementById('uploadForm').reset();
+                document.querySelector('.file-input-label').textContent = '📁 Choose CSV File';
+            } else {
+                this.showClientMessage(result.error || 'Failed to import employees. Please try again.', 'error');
+            }
+        } catch (error) {
+            this.showClientMessage('Failed to import employees. Please try again.', 'error');
+            console.error('Import error:', error);
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = '📤 Import Employees';
+        }
+    }
+
+
+        showClientMessage(text, type) {
+            const messageDiv = document.getElementById('clientMessage');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async loadEmployees() {
+            const container = document.getElementById('employeeContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading employees...</div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('@Url.Action("GetEmployees", "Employees")');
+                const result = await response.json();
+
+                if (response.ok && result.data) {
+                    this.employees = result.data;
+                    this.filteredEmployees = [...this.employees];
+                    this.renderEmployees();
+                } else {
+                    throw new Error('Failed to fetch employees');
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="no-employees">
+                        <div class="no-employees-icon">⚠️</div>
+                        <div>Failed to load employees. Please try again.</div>
+                    </div>
+                `;
+                console.error('Load error:', error);
+            }
+        }
+
+        handleSearch(e) {
+            const query = e.target.value.toLowerCase().trim();
+
+            if (!query) {
+                this.filteredEmployees = [...this.employees];
+            } else {
+                this.filteredEmployees = this.employees.filter(emp =>
+                    (emp.forenames && emp.forenames.toLowerCase().includes(query)) ||
+                    (emp.surname && emp.surname.toLowerCase().includes(query)) ||
+                    (emp.payrollNumber && emp.payrollNumber.toLowerCase().includes(query)) ||
+                    (emp.emailHome && emp.emailHome.toLowerCase().includes(query)) ||
+                    (emp.telephone && emp.telephone.includes(query)) ||
+                    (emp.mobile && emp.mobile.includes(query))
+                );
+            }
+
+            this.renderEmployees();
+        }
+
+        renderEmployees() {
+            const container = document.getElementById('employeeContainer');
+            const countDiv = document.getElementById('employeeCount');
+
+            countDiv.textContent = `${this.filteredEmployees.length} employee${this.filteredEmployees.length !== 1 ? 's' : ''}`;
+
+            if (this.filteredEmployees.length === 0) {
+                container.innerHTML = `
+                    <div class="no-employees">
+                        <div class="no-employees-icon">👥</div>
+                        <div>No employees found</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const employeeCards = this.filteredEmployees.map(emp => this.createEmployeeCard(emp)).join('');
+            container.innerHTML = `<div class="employee-grid">${employeeCards}</div>`;
+        }
+
+        createEmployeeCard(employee) {
+            const formatDate = (dateStr) => {
+                if (!dateStr) return 'Not specified';
+                try {
+                    return new Date(dateStr).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch {
+                    return 'Invalid date';
+                }
+            };
+
+            const formatAddress = (addr1, addr2, postcode) => {
+                const parts = [addr1, addr2, postcode].filter(Boolean);
+                return parts.length > 0 ? parts.join(', ') : 'Not specified';
+            };
+
+            const safeName = `${employee.forenames || ''} ${employee.surname || ''}`.trim() || 'Unnamed Employee';
+
+            return `
+                <div class="employee-card">
+                    <div class="employee-name">${safeName}</div>
+                    <div class="employee-payroll">Payroll: ${employee.payrollNumber || 'N/A'}</div>
+                    <div class="employee-details">
+                        <div class="detail-row">
+                            <span class="detail-label">📅 Birth Date:</span>
+                            <span class="detail-value">${formatDate(employee.dateOfBirth)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">🚀 Start Date:</span>
+                            <span class="detail-value">${formatDate(employee.startDate)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">📞 Telephone:</span>
+                            <span class="detail-value">${employee.telephone || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">📱 Mobile:</span>
+                            <span class="detail-value">${employee.mobile || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">📧 Email:</span>
+                            <span class="detail-value">${employee.emailHome || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">🏠 Address:</span>
+                            <span class="detail-value">${formatAddress(employee.address, employee.address2, employee.postcode)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        new EmployeeManager();
+    });
+</script>
